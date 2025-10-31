@@ -1,0 +1,17 @@
+[package]
+name = "arch-clean"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gtk = { version = "0.8", package = "gtk4", features = ["v4_12"] }
+glib = "0.18"
+
+# Para JSON
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[[bin]]
+name = "arch-clean"
+path = "src/main.rs"
+

@@ -1,0 +1,55 @@
+# Cargo
+target/
+!target/**/*  # Descomentar si se quiere incluir archivos del target/
+
+# Archivo de bloqueo de Cargo (descomentar si no quieres que se suba)
+# Cargo.lock
+
+# IDE (VS Code)
+.vscode/
+*.swp
+*.swo
+
+# IDE (vim)
+.vim/
+*.tmp
+
+# IDE (IntelliJ, CLion, PyCharm, etc.)
+.idea/
+*.iml
+*.iws
+
+# Build artifacts
+**/*.so
+**/*.dylib
+**/*.dll
+**/*.pyc
+__pycache__/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+*.out
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Editor backups
+*~
+\#*\#
