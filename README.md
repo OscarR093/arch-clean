@@ -1,132 +1,84 @@
-# Dashboard de Limpieza y Gestión de Paquetes
+# Arch Clean
 
-Aplicación con interfaz gráfica (GTK) para Linux que centraliza tareas de mantenimiento del sistema, mostrando información clara y permitiendo ejecutar acciones de manera segura.
+Arch Clean es una herramienta gráfica para la gestión segura de paquetes en sistemas Arch Linux y derivados. La aplicación proporciona una interfaz intuitiva para desinstalar paquetes, revisar dependencias y mantener tu sistema limpio y optimizado.
 
-## Requisitos del Sistema
+## Características principales
 
-### Rust
-Antes de compilar el proyecto, necesitas tener Rust instalado en tu sistema:
+### Actual
+- **Interfaz gráfica GTK**: Visualización de paquetes instalados con información detallada
+- **Información de paquetes**: Nombre, versión, descripción, fecha de instalación, tamaño y razón de instalación
+- **Sistema de iconos**: Visualización de iconos para paquetes cuando están disponibles
+- **Carga de paquetes**: Lista paquetes instalados explícitamente (no como dependencias)
+- **Gestión segura**: Mostrar información detallada para decisiones informadas de desinstalación
 
-```bash
-# Instalar Rust usando rustup
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source ~/.cargo/env
+### Funcionalidades planeadas
 
-# Verificar la instalación
-rustc --version
-cargo --version
-```
+#### Gestión de paquetes
+- Desinstalación segura con advertencia sobre posibles dependencias
+- Visualización de dependencias y paquetes que dependen del seleccionado
+- Búsqueda y filtrado de paquetes
 
-### Dependencias de GTK4
+#### Gestión avanzada
+- Identificación y limpieza de dependencias huérfanas
+- Limpieza de cache de paquetes en un solo clic
+- Gestión de paquetes AUR (a través de yay/paru)
+- Gestión de paquetes Flatpak
 
-En Arch Linux:
-```bash
-sudo pacman -S gtk4 glib2 gobject-introspection
-```
+#### Seguridad y verificación
+- Previsualización de lo que sucederá al desinstalar un paquete
+- Protección contra desinstalación accidental de paquetes críticos
+- Historial de operaciones de paquetes
 
-En Ubuntu/Debian:
-```bash
-sudo apt install libgtk-4-dev libglib2.0-dev gobject-introspection libgirepository1.0-dev
-```
+## Sistemas de paquetes soportados
 
-En Fedora:
-```bash
-sudo dnf install gtk4-devel glib2-devel gobject-introspection-devel
-```
+- **Pacman**: Sistema de paquetes principal de Arch Linux
+- **Yay/Paru**: Gestores de paquetes AUR
+- **Flatpak**: Sistema de paquetes universales
 
-### Dependencias del Sistema
-También necesitas tener instalados los siguientes paquetes que son requeridos por GTK4:
-```bash
-# En Arch Linux
-sudo pacman -S meson ninja gcc pkgconf
+## Estado actual del proyecto
 
-# En Ubuntu/Debian
-sudo apt install meson ninja-build build-essential pkg-config
+- ✅ Interfaz gráfica funcional con GTK4
+- ✅ Carga de paquetes instalados
+- ✅ Visualización de información detallada del paquete
+- ✅ Sistema de iconos modularizado
+- ✅ Gestión de errores de formato JSON
+- ⏳ Desinstalación de paquetes
+- ⏳ Detección de dependencias huérfanas
+- ⏳ Limpieza de cache
 
-# En Fedora
-sudo dnf install meson ninja-build gcc pkgconf
-```
+## Requisitos
 
-## Compilación
+- Arch Linux (o distribución derivada)
+- Rust (cargo)
+- GTK4 desarrollo bibliotecas
+- Pacman (y opcionalmente Yay/Paru)
+- JQ (para mejor manejo de JSON)
 
-### 1. Verificar que los scripts de gestión de paquetes existen
-Antes de compilar, asegúrate de que los scripts bash se encuentran en el directorio correcto:
+## Instalación
 
-```bash
-ls -la scripts/
-# Deberías ver los subdirectorios: pacman/, aur/, flatpak/
-```
+1. Clonar el repositorio
+2. Asegurarse de tener los requisitos instalados
+3. Ejecutar `cargo run` para compilar y ejecutar
 
-### 2. Compilar el proyecto en modo debug
-```bash
-cargo build
-```
+## Contribución
 
-### 3. Compilar el proyecto en modo release (optimizado)
-```bash
-cargo build --release
-```
+Las contribuciones son bienvenidas. Puedes ayudar:
 
-## Ejecución
+- Reportando problemas
+- Proponiendo nuevas características
+- Corrigiendo errores
+- Mejorando la documentación
+- Añadiendo soporte para más sistemas de paquetes
 
-### Ejecutar directamente con Cargo
-```bash
-cargo run
-```
+## Licencia
 
-### Ejecutar el binario compilado
-```bash
-# Modo debug
-./target/debug/deleter
+Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
 
-# Modo release
-./target/release/deleter
-```
+## Contribuciones Open Source
 
-## Desarrollo
+Arch Clean es un proyecto completamente open source y cualquier contribución es bienvenida. El proyecto se mantiene bajo la filosofía de software libre, lo que significa que puedes:
 
-### Compilar y ejecutar en un solo comando
-```bash
-cargo run
-```
-
-### Verificar el código sin compilar
-```bash
-cargo check
-```
-
-### Formatear el código
-```bash
-cargo fmt
-```
-
-### Verificar problemas de estilo
-```bash
-cargo clippy
-```
-
-### Ejecutar pruebas
-```bash
-cargo test
-```
-
-## Estructura del Proyecto
-
-- `src/main.rs`: Punto de entrada principal
-- `src/model/`: Estructuras de datos para representar paquetes
-- `src/backend/`: Lógica para ejecutar scripts externos
-- `src/ui/`: Componentes de la interfaz de usuario
-
-## Características
-
-- Interfaz gráfica con GTK4
-- Soporte para múltiples gestores de paquetes (pacman, AUR, flatpak)
-- Análisis de seguridad para eliminación de paquetes
-- Visualización de dependencias
-- Sistema de logging y debugging
-
-## Notas
-
-- El proyecto requiere que los scripts de gestión de paquetes estén disponibles en el directorio `scripts/`
-- Asegúrate de tener permisos adecuados para ejecutar los comandos de gestión de paquetes
-- Algunas funcionalidades pueden requerir permisos elevados (sudo) para operar
+- Usar el software para cualquier propósito
+- Estudiar cómo funciona y modificarlo
+- Distribuir copias
+- Mejorar el software y hacer públicas esas mejoras

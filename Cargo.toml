@@ -2,6 +2,12 @@
 name = "arch-clean"
 version = "0.1.0"
 edition = "2021"
+authors = ["Oscar R. <oscarr093@example.com>"]
+description = "A graphical tool for safe package management in Arch Linux systems"
+license = "MIT"
+repository = "https://github.com/oscarr093/arch-clean"
+homepage = "https://github.com/oscarr093/arch-clean"
+documentation = "https://github.com/oscarr093/arch-clean#readme"
 
 [dependencies]
 gtk = { version = "0.8", package = "gtk4", features = ["v4_12"] }

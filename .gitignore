@@ -1,8 +1,8 @@
 # Cargo
 target/
-!target/**/*  # Descomentar si se quiere incluir archivos del target/
 
-# Archivo de bloqueo de Cargo (descomentar si no quieres que se suba)
+# Dependiendo del tipo de proyecto, puede que quieras incluir o excluir Cargo.lock
+# Para aplicaciones, generalmente se incluye; para bibliotecas, se excluye
 # Cargo.lock
 
 # IDE (VS Code)

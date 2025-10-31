@@ -1,5 +1,6 @@
 // src/main.rs
 mod package;
+mod icon;
 mod ui;
 
 use gtk::prelude::*;

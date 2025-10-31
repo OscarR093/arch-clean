@@ -1,9 +1,11 @@
 // src/ui.rs
 use crate::package::Package;
+use crate::icon::IconManager;
 use gtk::prelude::*;
-use gtk::{Application, ApplicationWindow, Box, Button, Label, ListBox, ListBoxRow, Orientation, ScrolledWindow};
+use gtk::{Application, ApplicationWindow, Box, Button, Label, ListBox, ListBoxRow, Orientation, ScrolledWindow, Image};
 use std::process::Command;
 use serde_json;
+use std::cell::RefCell;
 
 pub fn build_ui(app: &Application) {
     let window = ApplicationWindow::builder()
@@ -31,10 +33,14 @@ pub fn build_ui(app: &Application) {
     scrolled.set_child(Some(&list_box));
     scrolled.set_vexpand(true);
 
+    // Creamos e inicializamos el IconManager
+    let icon_manager = std::rc::Rc::new(std::cell::RefCell::new(crate::icon::IconManager::new()));
+
     // Clonamos para el closure
     let list_box_clone = list_box.clone();
+    let icon_manager_clone = icon_manager.clone();
     refresh_button.connect_clicked(move |_| {
-        load_packages(&list_box_clone);
+        load_packages_with_icons(&list_box_clone, &icon_manager_clone);
     });
 
     main_box.append(&refresh_button);
@@ -43,10 +49,11 @@ pub fn build_ui(app: &Application) {
     window.present();
 
     // Carga inicial
-    load_packages(&list_box);
+    load_packages_with_icons(&list_box, &icon_manager);
 }
 
-fn load_packages(list_box: &ListBox) {
+// Función actualizada que utiliza el IconManager
+fn load_packages_with_icons(list_box: &ListBox, icon_manager: &std::rc::Rc<std::cell::RefCell<crate::icon::IconManager>>) {
     list_box.remove_all();
 
     // Mostrar "Cargando..."
@@ -78,7 +85,7 @@ fn load_packages(list_box: &ListBox) {
                         list_box.append(&row);
                     } else {
                         for pkg in packages {
-                            let row = create_package_row(&pkg);
+                            let row = create_package_row_with_icon(&pkg, icon_manager);
                             list_box.append(&row);
                         }
                     }
@@ -88,13 +95,13 @@ fn load_packages(list_box: &ListBox) {
                     println!("Error de parseo JSON: {}", e);
                     
                     // Mostrar el error específico del JSON
-                    let json_str = json_str.to_string();
                     let error_line = e.line();
                     let error_column = e.column();
                     
                     println!("Error en línea: {}, columna: {}", error_line, error_column);
                     
                     // Mostrar contexto alrededor del error
+                    let json_str = json_str.to_string();
                     let lines: Vec<&str> = json_str.lines().collect();
                     let start = if error_line > 3 { error_line - 3 } else { 0 };
                     let end = std::cmp::min(lines.len(), error_line + 2);
@@ -120,14 +127,40 @@ fn load_packages(list_box: &ListBox) {
     }
 }
 
-fn create_package_row(pkg: &Package) -> ListBoxRow {
+// Nueva función para crear filas con icono
+fn create_package_row_with_icon(pkg: &Package, icon_manager: &std::rc::Rc<std::cell::RefCell<crate::icon::IconManager>>) -> ListBoxRow {
     let row = ListBoxRow::new();
-    let vbox = Box::new(Orientation::Vertical, 4);
-    vbox.set_margin_start(8);
-    vbox.set_margin_end(8);
-    vbox.set_margin_top(8);
-    vbox.set_margin_bottom(8);
+    
+    // Contenedor horizontal para icono y texto
+    let hbox = Box::new(Orientation::Horizontal, 8);
+    hbox.set_margin_start(8);
+    hbox.set_margin_end(8);
+    hbox.set_margin_top(8);
+    hbox.set_margin_bottom(8);
 
+    // Buscar icono específico para este paquete
+    let icon_path = {
+        let mut manager = icon_manager.borrow_mut();
+        manager.find_icon_for_package(&pkg.name)
+    };
+
+    let icon_image = if let Some(path) = icon_path {
+        // Cargar imagen desde archivo
+        let img = gtk::Image::from_file(&path);
+        img.set_pixel_size(32);
+        img
+    } else {
+        // Icono genérico
+        let img = gtk::Image::from_icon_name("application-x-executable");
+        img.set_pixel_size(32);
+        img
+    };
+    
+    hbox.append(&icon_image);
+
+    // Contenedor vertical para la información del paquete
+    let vbox = Box::new(Orientation::Vertical, 4);
+    
     let name = format!("<b>{}</b> <span foreground='#555'>{}</span>", pkg.name, pkg.version);
     let desc = pkg.description.chars().take(80).collect::<String>() + "...";
     let size_mb = pkg.installed_size as f64 / 1024.0 / 1024.0;
@@ -149,15 +182,35 @@ fn create_package_row(pkg: &Package) -> ListBoxRow {
     vbox.append(&desc_label);
     vbox.append(&info_label);
 
-    row.set_child(Some(&vbox));
+    hbox.append(&vbox);
+    row.set_child(Some(&hbox));
     row
 }
 
+
+
 fn show_error(list_box: &ListBox, msg: &str) {
     let row = ListBoxRow::new();
+    
+    // Contenedor horizontal para icono y mensaje
+    let hbox = Box::new(Orientation::Horizontal, 8);
+    hbox.set_margin_start(8);
+    hbox.set_margin_end(8);
+    hbox.set_margin_top(8);
+    hbox.set_margin_bottom(8);
+
+    // Icono de error
+    let icon_image = gtk::Image::from_icon_name("dialog-error");
+    icon_image.set_pixel_size(32);
+    hbox.append(&icon_image);
+
+    // Mensaje de error
     let label = Label::new(Some(msg));
     label.add_css_class("error");
-    row.set_child(Some(&label));
+    label.set_xalign(0.0);
+    hbox.append(&label);
+
+    row.set_child(Some(&hbox));
     list_box.append(&row);
 }
 
